@@ -1,29 +1,38 @@
 <template>
   <div > 
     <div class="layer-switch">
-      <button 
-        v-show="!showLayerSwitch"
-        @click="showLayerSwitch = true">
-        切换底图
-      </button>
-      <div v-show="showLayerSwitch">
+      <div class="sw">
+        <i class="iconfont"
+          :class="{'icon-arrow-up-bold':showLayerSwitch, 'icon-arrow-down':!showLayerSwitch}"
+          @click="showLayerSwitch = !showLayerSwitch">
+        </i>
+      </div>
+      <div v-show="showLayerSwitch" class="main">
         <div 
-          v-for="item in tileList" 
+          v-for="(item,i) in tileList" 
           :key="item.code" 
           @click="changeBaseLayer(item)"
-          class="layer-item">{{item.name}}</div>
+          class="layer-item"
+          :class="{'layer-item-last': i === tileList.length - 1}">
+          {{item.name}}
+        </div>
       </div>
     </div>
-    <div class="map" id="map">
-
-    </div>
+    <div class="map" id="map"></div>
   </div>
 </template>
 
 <script>
 import {Map,  View} from 'ol'
 import TileLayer from 'ol/layer/Tile'
-import { XYZ } from 'ol/source'
+import { XYZ, VectorTile } from 'ol/source'
+import VectorTileLayer from 'ol/layer/VectorTile'
+import MVT from 'ol/format/MVT'
+
+import { generateStyleMap } from '../style/createStyle'
+import { stylesConf } from '../style/ersi_vectortile'
+
+const styles = generateStyleMap(stylesConf)
 export default {
   data () {
     return {
@@ -68,8 +77,8 @@ export default {
           type: 'xyz'
         },
         {
-          code: 'esri_elevation_Dark',
-          name: 'arcgi黑色',
+          code: 'esri_Dark',
+          name: 'arcgi黑色矢量',
           url: ' http://server.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
           type: 'xyz'
         },
@@ -78,6 +87,12 @@ export default {
           name: 'weather网站底图',
           url: 'https://tiles.windy.com/tiles/v9.0/darkmap/{z}/{x}/{y}.png',
           type: 'xyz'
+        },
+        {
+          code: 'esri-vectortile',
+          name: 'arcgis黑色地形',
+          url:'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/tile/{z}/{y}/{x}.pbf',
+          type: 'vector'
         },
       ],
       showLayerSwitch: false
@@ -120,13 +135,26 @@ export default {
       let baseLayer
       if (conf.type === 'xyz') {
         baseLayer = this.createXYZTileLayer(conf.url)
+      } else if (conf.type === 'vector') {
+        baseLayer = this.createVectorTile(conf.url)
       }
       this.map.removeLayer(this.baseLayer)
       this.map.addLayer(baseLayer)
       this.baseLayer = baseLayer
     },
-    createVectorTile() {
-      
+    createVectorTile(url) {
+      const layer = new VectorTileLayer({
+        source: new VectorTile({
+          format: new MVT(),
+          url: url,
+          projection: 'EPSG:4326'
+        }),
+        style: function (ft) {
+          const type = ft.get('layer')
+          return styles[type]
+        }
+      })
+      return layer
     }
   }
 }
@@ -142,16 +170,27 @@ export default {
   left: 1rem;
   top: 1rem;
   z-index: 1;
-  border: 1px solid #666;
+  border: 1px solid #d7d7d7;
   background-color: #fff;
-  padding: 10px;
+  padding: 5px;
   border-radius: 3px;
 }
-.layer-switch button{
-
+.main{
+  margin: 0 5px;
 }
 .layer-item{
-  padding: 5px 0;
+  margin-top: 5px;
   cursor: pointer;
+  border-bottom: 1px solid #c8c8c8;
+  text-align: left;
+}
+.layer-item-last{
+  border: 0;
+}
+.sw{
+  text-align:center;
+  height: 16px;
+  cursor: pointer;
+  color: #03A9F4;
 }
 </style>

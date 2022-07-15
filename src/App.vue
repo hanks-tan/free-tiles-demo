@@ -19,7 +19,7 @@ export default {
 </script>
 
 <style>
-@import url('~ol/ol.css');
+/* @import url('~ol/ol.css'); */
 .ol-zoom{
   display: none;
 }
