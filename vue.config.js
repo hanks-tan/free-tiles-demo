@@ -6,7 +6,7 @@ module.exports = {
     config.resolve.alias.set('vue$', 'vue/dist/vue.esm.js')
   },
   devServer: {
-    proxy: {},
+    // proxy: {},
     host: '0.0.0.0',
     disableHostCheck: true,
     historyApiFallback: true
