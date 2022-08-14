@@ -21,16 +21,16 @@ export const createIcon = (opt) => {
 
 const create = (type, opt) => {
   switch (type) {
-    case 'fill':
-      return new Fill(opt)
-    case 'stroke':
-      return new Stroke(opt)
-    case 'circle':
-      return new createCircle(opt)
-    case 'icon':
-      return new Icon(opt)
-    default:
-      break;
+  case 'fill':
+    return new Fill(opt)
+  case 'stroke':
+    return new Stroke(opt)
+  case 'circle':
+    return new createCircle(opt)
+  case 'icon':
+    return new Icon(opt)
+  default:
+    break
   }
 }
 
@@ -53,7 +53,7 @@ export const createOneStyle = (styleConf) => {
     const v = styleConf[k]
     const typeStyle = create(k, v)
     if (typeStyle) {
-      let type = ['circle', 'icon'].includes(k) ? 'image': k
+      let type = ['circle', 'icon'].includes(k) ? 'image' : k
       styleObj[type] = typeStyle
     }
   })

@@ -230,7 +230,7 @@ export default {
     },
     createMapboxVectorTile (config) {
       const resolutions = []
-      for (let i = 0; i <= 8; ++i) {
+      for (let i = 0; i <= 22; ++i) {
         resolutions.push(156543.03392804097 / Math.pow(2, i * 2))
       }
       const layer = new VectorTileLayer({
